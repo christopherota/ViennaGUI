@@ -263,12 +263,7 @@ def splash_screen():
 
     splash_root = tk.Tk()
 
-    screen_width = splash_root.winfo_screenwidth()
-    screen_height = splash_root.winfo_screenheight()
-    window_width = int(screen_width * 0.5)
-    window_height = int(screen_height * 0.5)
 
-    splash_root.geometry(f"{window_width}x{window_height}")
     splash_root.title("ViennaRNA")
     splash_root.config(bg='#36454f')
 
