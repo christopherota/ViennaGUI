@@ -16,7 +16,7 @@ from PIL.PngImagePlugin import PngInfo
 from io import BytesIO
 import requests
 import urllib.request
-
+from tkinter import filedialog
 
 
 
@@ -125,11 +125,9 @@ def go_event():
     if rbtn.get()==1:
        #if txt_seq is showing do the following
        if txt_seq.winfo_ismapped() == True:
-	  print ("sequence length: ",len(txt_seq.get(1.0, "end-1c")))
           with open ("input.txt", "w") as usr_inp:
-            usr_inp.write(txt_seq.get(1.0, "end-1c").replace('\n',''))
-          os.system("RNAfold < input.txt")
-          print ("Finished one sequence")
+            usr_inp.write(txt_seq.get(1.0, "end-1c"))
+          subprocess.run(["RNAfold", "input.txt"])  
           #find the ps file
           find_file()
           #open the ps file on canvas      
@@ -207,11 +205,12 @@ def open_file():
     #Toplevel window title and dimensions
     ps_window.title("Output")
     
+    #make ps_loc global
+    global ps_loc
     ps_loc = ""
     print(find_ps)
     for y in find_ps:
        ps_loc = os.path.join(os.getcwd(),y)
-       
         
     #Open the ps file    
     img_open = Image.open(ps_loc)
@@ -227,7 +226,7 @@ def open_file():
     #Paste the ps file onto the canvas
     ps_canvas.create_image(0, 0, anchor="nw", image=img)
     ps_canvas.grid()
-
+    
     #add a download button so the images can be downloaded
     download_btn = Button(ps_window, text='Save', width=5, height=1, bd='5', command=save_image)
     download_btn.place(x=img_w-75, y=0, anchor="nw")
@@ -259,7 +258,25 @@ def quit_prg():
 def open_help():
     webbrowser.open_new('https://github.com/christopherota/ViennaGUI/blob/fcc4c8bf59847437cc5aaa1c8fba28f27335e1c7/Linux/Table%20of%20Contents.pdf?raw=true')
 
-    
+def destroy():
+	splash_root.destroy()
+	
+class LoadingBar(tk.Frame):
+	def __init__(self, parent, width, height, bg_color, fg_color):
+		tk.Frame.__init__(self, parent, width=width, height=height, bg=bg_color)
+		self.width=width
+		self.height=height
+		self.fg_color=fg_color
+		self.create_widgets()
+		
+	def create_widgets(self):
+		self.loading_bar = tk.Canvas(self, width=self.width, height=self.height, bg=self['bg'])
+		self.loading_bar.pack(fill='both',expand=True)
+		self.loading_bar.create_rectangle(0,0,0,self.height, fill=self.fg_color, outline=self.fg_color, tags=('loading_bar',))
+	
+	def update_loading_bar(self, progress):
+		self.loading_bar.coords('loading_bar', 0,0, int(progress * self.width), self.height)
+		
 #splash screen window dimmensions, labels, and text
 def splash_screen():
 
@@ -285,97 +302,91 @@ def splash_screen():
     label = tk.Label(splash_root, text="Loading...", font=("Helvetica", 24), bg='#36454f', fg='white')
     label.pack(side="top", fill="both", expand=True)
 
-#limits splash screen to 5 seconds and moves to main_window protocol to close and open main window.
-    splash_root.after(4000,main_window)
-    splash_root.after(4100,splash_root.destroy)
-
-
-#function to open main window after destroying splash screen
-#Main GUI window title and dimensions
-#The GUI uses grid as the geometry
-    
-def main_window():
-
-    
-    window = tk.Tk()
-    window.title ("ViennaRNA Package")
-    window.config(bg='#36454f')
-    
-    #Variables for checkbutton and radio button
-    cb = IntVar()
-    rbtn = IntVar()
-
-#Additional details for main GUI window
-#Welcome and enter sequence labels on main GUI window
-    prg_title = Label(window, text="Welcome to Vienna RNA Program",
-       font=("Times New Roman", 14),bg='#36454f', fg="white").grid(
-       row=0, columnspan=15, padx=5, pady=5)
-       
-    prg_choice1 = Radiobutton(window, text="RNAfold", variable=rbtn,
-       value=1, command=fold_pl_select, bg='#36454f', fg="white")
-    prg_choice1.grid(row=1, column=3)
-       
-    prg_choice2 = Radiobutton(window, text="RNAalifold", variable=rbtn,
-       value=2, command=aln_select, bg='#36454f', fg="white")
-    prg_choice2.grid(row=1, column=4, padx=3, pady=3)
-
-    prg_choice3 = Radiobutton(window, text="RNAplfold", variable=rbtn,
-       value=3, command=fold_pl_select, bg='#36454f', fg="white") 
-    prg_choice3.grid(row=1, column=5)
-    rbtn.set(1)
-
-    lbl_seq = Label(window, text="Enter RNA sequence: ",
-       font=("Times New Roman", 12), bg='#36454f', fg="white").grid(
-       row=2, columnspan=15, padx=5, pady=5)
-
-#Text box and go button on main GUI window
-    global txt_seq, go_btn, inp_seq, quit_btn
-    global cb_file, browse_box, browse_btn, browse_btn2
-
-    txt_seq = Text(window, width=40, height=10)
-    txt_seq.grid(row=4, column=1, columnspan=5, padx=5, pady=25)
-    inp_seq = txt_seq.get(1.0, "end-1c")
-
-    go_btn = Button(window, text="Go", command=go_event, highlightbackground='#36454f').grid(row=4, column=7, padx=5, pady=10)
-
-
-#Checkbutton and browse on main GUI window
-    cb_file = Checkbutton(window, text="To upload file, check box", variable=cb,command= isChecked, bg='#36454f',fg='white')
-    cb_file.grid(row=6, column=1, columnspan=5, sticky=W, padx=5, pady=5)  
-    cb.set(0)
-
-    browse_box = Entry(window, width = 40)
-    browse_box.grid(row=3, column=1, columnspan=6, padx=5, pady=5)
-    remove(browse_box)
-    
-    browse_btn =  Button(window, text="Browse", command=browse)
-    browse_btn.grid(row=3, column=7, sticky=W, padx=5, pady=5)
-    remove(browse_btn)
-
-    browse_btn2 = Button(window, text="Browse", command=browse_aln)
-    browse_btn2.grid(row=3, column=7, sticky=W, padx=5, pady=5)
-    remove(browse_btn2)
-
-    help_button = tk.Button(window, text="Help", highlightbackground='#36454f', command=open_help)
-    help_button.grid(row=0, column=7, padx=3, pady=3)
-    
-#Quit button on main GUI window to delete tmp and close program
-    quit_btn = Button(window, text="Quit", command=quit_prg, highlightbackground='#36454f')
-    quit_btn.grid(row=6, column=7, padx=5, pady=5)
-
-
-
-#When closing by clicking X, delete tmp and close program
-    window.protocol("WM_DELETE_WINDOW", quit_prg)
-
+    if __name__ == '__main__':
+    	Loading_bar = LoadingBar(splash_root, width=300, height=30, bg_color='#36454f', fg_color='black')
+    	Loading_bar.pack()
+    	for i in range(10001):
+    		Loading_bar.update_loading_bar(i/10000)
+    		splash_root.update()
+    		
+    splash_root.destroy()
 
 splash_screen()
 
+#Main GUI window title and dimensions
+#The GUI uses grid as the geometry manager
+window = Tk()
+window.title ("ViennaRNA Package")
+window.config(bg='#36454f')
 
 
+#Variables for checkbutton and radio button
+cb = IntVar()
+rbtn = IntVar()
+
+#Additional details for main GUI window
+#Welcome and enter sequence labels on main GUI window
+prg_title = Label(window, text="Welcome to Vienna RNA Program",
+       font=("Times New Roman", 14), bg='#36454f', fg='white').grid(
+       row=0, columnspan=15, padx=5, pady=5)
+       
+prg_choice1 = Radiobutton(window, text="RNAfold", variable=rbtn,
+       value=1, command=fold_pl_select, bg='#36454f', fg='white')
+prg_choice1.grid(row=1, column=3)
+       
+prg_choice2 = Radiobutton(window, text="RNAalifold", variable=rbtn,
+       value=2, command=aln_select, bg='#36454f', fg='white')
+prg_choice2.grid(row=1, column=4, padx=3, pady=3)
+
+prg_choice3 = Radiobutton(window, text="RNAplfold", variable=rbtn,
+       value=3, command=fold_pl_select, bg='#36454f', fg='white') 
+prg_choice3.grid(row=1, column=5)
+rbtn.set(1)
+
+lbl_seq = Label(window, text="Enter RNA sequence: ",
+       font=("Times New Roman", 12), bg='#36454f', fg='white').grid(
+       row=2, columnspan=15, padx=5, pady=5)
+
+#Text box and go button on main GUI window
+global txt_seq, go_btn, inp_seq, quit_btn
+global cb_file, browse_box, browse_btn, browse_btn2
+
+txt_seq = Text(window, width=40, height=10)
+txt_seq.grid(row=4, column=1, columnspan=5, padx=5, pady=25)
+inp_seq = txt_seq.get(1.0, "end-1c")
+
+go_btn = Button(window, text="Go", command=go_event, highlightbackground ='#36454f' )
+go_btn.grid(row=4, column=7, padx=5, pady=10)     
 
 
+#Checkbutton and browse on main GUI window
+cb_file = Checkbutton(window, text="To upload file, check box", variable=cb, 
+                      command= isChecked, bg='#36454f', fg='white')
+cb_file.grid(row=6, column=1, columnspan=5, sticky=W, padx=5, pady=5)  
+cb.set(0)
+
+browse_box = Entry(window, width = 40)
+browse_box.grid(row=3, column=1, columnspan=6, padx=5, pady=5)
+remove(browse_box)
+
+browse_btn =  Button(window, text="Browse", command=browse)
+browse_btn.grid(row=3, column=7, sticky=W, padx=5, pady=5)
+remove(browse_btn)
+
+browse_btn2 = Button(window, text="Browse", command=browse_aln)
+browse_btn2.grid(row=3, column=7, sticky=W, padx=5, pady=5)
+remove(browse_btn2)
+
+help_button = tk.Button(window, text="Help",highlightbackground ='#36454f', command=open_help)
+help_button.grid(row=0, column=7, padx=3, pady=3)
+    
+    
+#Quit button on main GUI window to delete tmp and close program
+quit_btn = Button(window, text="Quit", command=quit_prg, highlightbackground ='#36454f')
+quit_btn.grid(row=6, column=7, padx=5, pady=5)
+
+#When closing by clicking X, delete tmp and close program
+window.protocol("WM_DELETE_WINDOW", quit_prg)
 
 
-
-
+window.mainloop()
