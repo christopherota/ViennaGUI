@@ -3,20 +3,24 @@
 #This program is for Linux only
 
 #Import modules for main GUI program
-import vienna_config_v1
-import os, sys, subprocess, shutil, time
+import vienna_config_v2
+import os, sys, subprocess, shutil, time, threading
 import tkinter as tk
 import io
 import webbrowser
 from tkinter import *
 from tkinter import messagebox
+from tkinter import filedialog
 from tkinter.filedialog import askopenfile
 from PIL import Image, ImageTk
 from PIL.PngImagePlugin import PngInfo
 from io import BytesIO
+from tkinter import ttk
 import requests
 import urllib.request
-from tkinter import filedialog
+import socket
+
+
 
 
 
@@ -122,8 +126,8 @@ def aln_select():
 def go_event():
     global program
     global user_input
-    if rbtn.get()==1:
-       #if txt_seq is showing do the following
+# This line edited by Andy
+    if Combo.get()== "RNAfold":
        if txt_seq.winfo_ismapped() == True:
           with open ("input.txt", "w") as usr_inp:
             usr_inp.write(txt_seq.get(1.0, "end-1c"))
@@ -146,7 +150,8 @@ def go_event():
           program = "RNAfold"
           user_input = "file"
           
-    elif rbtn.get()==2:
+      #This line edited by Andy    
+    elif Combo.get()=="RNAalifold":
        subprocess.run(["RNAalifold", filepath])
        #find the ps file
        find_file()
@@ -255,12 +260,20 @@ def quit_prg():
         window.destroy()
 
 #function for help button command to pull url from web
-def open_help():
-    webbrowser.open_new('https://github.com/christopherota/ViennaGUI/blob/fcc4c8bf59847437cc5aaa1c8fba28f27335e1c7/Linux/Table%20of%20Contents.pdf?raw=true')
+#def open_help():
+ #   webbrowser.open_new('https://github.com/christopherota/ViennaGUI/blob/fcc4c8bf59847437cc5aaa1c8fba28f27335e1c7/Linux/Table%20of%20Contents.pdf?raw=true')
 
+#function for help button command to pull help document from file directory as backup
+def open_help():
+	helpdoc_path = 'helpdoc.pdf'
+	helpdoc_path = os.path.join(os.path.dirname(__file__), helpdoc_path)
+	webbrowser.open_new(helpdoc_path)
+    
+#function to destroy the splash screen after loading has occured
 def destroy():
 	splash_root.destroy()
 	
+#class and functions for loading bar on splash screen	
 class LoadingBar(tk.Frame):
 	def __init__(self, parent, width, height, bg_color, fg_color):
 		tk.Frame.__init__(self, parent, width=width, height=height, bg=bg_color)
@@ -276,6 +289,31 @@ class LoadingBar(tk.Frame):
 	
 	def update_loading_bar(self, progress):
 		self.loading_bar.coords('loading_bar', 0,0, int(progress * self.width), self.height)
+
+# Function to connect to internet host for help document scraping redundancy
+# Define a function to check for an internet connection
+def check_internet():
+    try:
+        # Attempt to connect to a well-known internet host
+        socket.create_connection(("www.google.com", 80))
+        return True
+    except OSError:
+        pass
+    return False
+
+#Andy Code start
+def click(event):
+	global RNAlabel
+	
+	for option in options:
+		if Combo.get() == "RNAalifold":
+			command = aln_select()
+		else:
+			command = fold_pl_select()
+		
+
+
+# Andy new code end
 		
 #splash screen window dimmensions, labels, and text
 def splash_screen():
@@ -285,22 +323,57 @@ def splash_screen():
 
     splash_root.title("ViennaRNA")
     splash_root.config(bg='#36454f')
+    splash_root.geometry("600x600")
 
+    splashimg_path = 'RNAimg.png'
+    splashimg_path = os.path.join(os.path.dirname(__file__), splashimg_path)
     splash_img = 'https://github.com/christopherota/ViennaGUI/blob/main/Linux/RNAimg.png?raw=true'
-    with urllib.request.urlopen(splash_img) as u:
-        raw_data = u.read()
-    im = Image.open(BytesIO(raw_data))
-    img1 = ImageTk.PhotoImage(im)
-    img_label = tk.Label(splash_root, image=img1)
-    img_label.image = img1
-    img_label.pack(side="top", fill="both", expand=True)
+    
+
+#error handling of RNAimg for splash screen. 
+    try:
+    	with urllib.request.urlopen(splash_img) as u:
+        	raw_data = u.read()
+    	im = Image.open(BytesIO(raw_data))
+    	img1 = ImageTk.PhotoImage(im)
+    	img_label = tk.Label(splash_root, image=img1)
+    	img_label.image = img1
+    	img_label.pack(side="top", fill="both", expand=True)
+    except:
+    	
+    	im = Image.open(splashimg_path)
+    	img1 = ImageTk.PhotoImage(im)
+    	img_label = tk.Label(splash_root, image=img1)
+    	img_label.image = img1
+    	img_label.pack(side="top", fill="both", expand=True)
+    	
 
 
-    splash_label = Label(splash_root, text="Welcome to ViennaRNA", font=30, background='#36454f', fg='white')
+    splash_label = Label(splash_root, text="ViennaRNA GUI", font=30, background='#36454f', fg='white')
     splash_label.pack(side="top", fill="both", expand=True)
+    
+    # Create the text box and scroll bar for terminal output box
+    text_box = Text(splash_root, width=40, height=10)
+    scrollbar = tk.Scrollbar(splash_root, command=text_box.yview)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    text_box.configure(yscrollcommand=scrollbar.set)
+	
+    text_box.pack(side="top", fill="both", expand=True)
+
+#temp output file for storing terminal output text to feed into tkinter text box.  
+    tempoutput_path = 'tempoutput.txt'
+    tempoutput_path = os.path.join(os.path.dirname(__file__), tempoutput_path)
+    
+    with open(tempoutput_path, "r") as f:
+    	contents = f.read()
+    	text_box.insert(tk.END, contents)
+    
 
     label = tk.Label(splash_root, text="Loading...", font=("Helvetica", 24), bg='#36454f', fg='white')
     label.pack(side="top", fill="both", expand=True)
+    
+
+#loading bar
 
     if __name__ == '__main__':
     	Loading_bar = LoadingBar(splash_root, width=300, height=30, bg_color='#36454f', fg_color='black')
@@ -308,7 +381,7 @@ def splash_screen():
     	for i in range(10001):
     		Loading_bar.update_loading_bar(i/10000)
     		splash_root.update()
-    		
+
     splash_root.destroy()
 
 splash_screen()
@@ -316,8 +389,9 @@ splash_screen()
 #Main GUI window title and dimensions
 #The GUI uses grid as the geometry manager
 window = Tk()
-window.title ("ViennaRNA Package")
+window.title ("ViennaRNA GUI")
 window.config(bg='#36454f')
+window.geometry("450x450")
 
 
 #Variables for checkbutton and radio button
@@ -326,26 +400,20 @@ rbtn = IntVar()
 
 #Additional details for main GUI window
 #Welcome and enter sequence labels on main GUI window
-prg_title = Label(window, text="Welcome to Vienna RNA Program",
+prg_title = Label(window, text="Welcome to Vienna RNA GUI",
        font=("Times New Roman", 14), bg='#36454f', fg='white').grid(
        row=0, columnspan=15, padx=5, pady=5)
-       
-prg_choice1 = Radiobutton(window, text="RNAfold", variable=rbtn,
-       value=1, command=fold_pl_select, bg='#36454f', fg='white')
-prg_choice1.grid(row=1, column=3)
-       
-prg_choice2 = Radiobutton(window, text="RNAalifold", variable=rbtn,
-       value=2, command=aln_select, bg='#36454f', fg='white')
-prg_choice2.grid(row=1, column=4, padx=3, pady=3)
 
-prg_choice3 = Radiobutton(window, text="RNAplfold", variable=rbtn,
-       value=3, command=fold_pl_select, bg='#36454f', fg='white') 
-prg_choice3.grid(row=1, column=5)
-rbtn.set(1)
+prg_select_label = Label(window, text="Please Select Program Below:",
+       font=("Times New Roman", 14), bg='#36454f', fg='white').grid(
+       row=1, columnspan=15, padx=5, pady=5)
+       
+
+
 
 lbl_seq = Label(window, text="Enter RNA sequence: ",
        font=("Times New Roman", 12), bg='#36454f', fg='white').grid(
-       row=2, columnspan=15, padx=5, pady=5)
+       row=3, columnspan=15, padx=5, pady=5)
 
 #Text box and go button on main GUI window
 global txt_seq, go_btn, inp_seq, quit_btn
@@ -362,7 +430,7 @@ go_btn.grid(row=4, column=7, padx=5, pady=10)
 #Checkbutton and browse on main GUI window
 cb_file = Checkbutton(window, text="To upload file, check box", variable=cb, 
                       command= isChecked, bg='#36454f', fg='white')
-cb_file.grid(row=6, column=1, columnspan=5, sticky=W, padx=5, pady=5)  
+cb_file.grid(row=6, column=1, columnspan=5, padx=5, pady=5)  
 cb.set(0)
 
 browse_box = Entry(window, width = 40)
@@ -377,9 +445,21 @@ browse_btn2 = Button(window, text="Browse", command=browse_aln)
 browse_btn2.grid(row=3, column=7, sticky=W, padx=5, pady=5)
 remove(browse_btn2)
 
+
 help_button = tk.Button(window, text="Help",highlightbackground ='#36454f', command=open_help)
 help_button.grid(row=0, column=7, padx=3, pady=3)
-    
+
+#andy code
+options = [" ","RNAfold"," ", "RNAalifold"," ", "RNAplfold"]
+
+Combo = ttk.Combobox(window, values = options)
+Combo.set("Select Program")
+Combo.bind("<<ComboboxSelected>>", click)
+Combo.grid(row=2, columnspan=25, padx=10, pady=10)
+
+#andy code
+	
+
     
 #Quit button on main GUI window to delete tmp and close program
 quit_btn = Button(window, text="Quit", command=quit_prg, highlightbackground ='#36454f')
@@ -390,3 +470,5 @@ window.protocol("WM_DELETE_WINDOW", quit_prg)
 
 
 window.mainloop()
+#
+
