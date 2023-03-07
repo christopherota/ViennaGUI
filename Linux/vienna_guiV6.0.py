@@ -129,9 +129,11 @@ def go_event():
 # This line edited by Andy
     if Combo.get()== "RNAfold":
        if txt_seq.winfo_ismapped() == True:
+	  print ("sequence length: ",len(txt_seq.get(1.0, "end-1c")))
           with open ("input.txt", "w") as usr_inp:
-            usr_inp.write(txt_seq.get(1.0, "end-1c"))
-          subprocess.run(["RNAfold", "input.txt"])  
+            usr_inp.write(txt_seq.get(1.0, "end-1c").replace('\n',''))
+          os.system("RNAfold < input.txt")
+          print ("Finished one sequence")
           #find the ps file
           find_file()
           #open the ps file on canvas      
