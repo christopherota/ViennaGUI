@@ -1,5 +1,7 @@
-![GitHub contributors](https://img.shields.io/github/contributors/kariBifs/capston?color=color)
+![GitHub contributors](https://img.shields.io/github/contributors/christopherota/ViennaGUIv2.0?color=color)
 ![GitHub language](https://img.shields.io/badge/language-Python-red)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/christopherota/ViennaGUIv2.0)
+
 <br>
 
 ## **GUI for ViennaRNA Package Version 2.0**
@@ -12,9 +14,9 @@
 
 GUI for ViennaRNA is a
 basic GUI that allows users to add sequences either as 
-user input or from a file. The user is allowed to select one of the three programs (RNAfold, RNAalifold, RNAplfold).
-The PostScript files generated are also displayed in a GUI. 
-This is for local ViennaRNA. The application runs on Windows, Linux  and MacOS.
+user input or from a file. The user is allowed to select one of the three programs (RNAfold, RNAalifold, RNAplfold, RNAcofold).
+The PostScript files generated are also displayed in a GUI and can be saved to a directory of choice. 
+This GUI is for running local ViennaRNA. The application runs on Windows, Linux  and MacOS.
 
 ViennaGUI v2.0 is an upgraded GUI based on a fork from kariBifs/ViennaGUI.
 <br>
