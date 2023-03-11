@@ -15,6 +15,8 @@ basic GUI that allows users to add sequences either as
 user input or from a file. The user is allowed to select one of the three programs (RNAfold, RNAalifold, RNAplfold).
 The PostScript files generated are also displayed in a GUI. 
 This is for local ViennaRNA. The application runs on Windows, Linux  and MacOS.
+
+ViennaGUI v2.0 is an upgraded GUI based on a fork from kariBifs/ViennaGUI.
 <br>
 
 **Motivation**
@@ -50,17 +52,19 @@ To make locally-installed ViennaRNA package user-friendly.
 
 **Installation**
 <br>
-Before running vienna_guiV5.py script ensure the 
+Before running vienna_guiV6.0.py script ensure the 
 following have been installed:
 
 - ViennaRNA package 2.4.7 & up
 - Python 3.9.7 & up
 - Pillow  9.0.1
-- Ghostscript 9.54.0 &up
+- Ghostscript 9.54.0 & up
+
+*All other modules should be current in Python base package. 
 
 Ensure that all executables have been updated prior to
-running the script and that the vienna_config_v1.py file
-is in the same directory.
+running the script and that the vienna_config_v2.py file and
+all supporting files are in the same directory.
 
 ***********************Warning***************************
 The ViennaRNA - RNAfold GUI creates a tmp folder in the
@@ -92,8 +96,9 @@ Distributed under the MIT License.
 
 ## **Contact**
 <br>
-Project Link: https://github.com/kariBifs/ViennaGUI.git
+Original Project Link: https://github.com/kariBifs/ViennaGUI.git
 <br>
+Updated Project Link: https://github.com/christopherota/ViennaGUIv2.0
 <p align="right">
 <a href="#top">(Back to top)</a>.</p>
 <br>
