@@ -45,8 +45,10 @@ To make locally-installed ViennaRNA package user-friendly.
  <br>
  <img src = "https://user-images.githubusercontent.com/16065443/224482901-d1dcfc56-0a3c-483c-ac22-1f386020be4a.png"width=450 height=200>
  <br>
- <img src = "imagesread/viennaout.png"width=200 height=200>
- 
+ <img src = "https://user-images.githubusercontent.com/16065443/224578020-23323aee-de16-45f3-8c90-9bb42c5abcd2.png"width=200 height=200>
+<br>
+<br>
+<br>
 
 </p>
 <br>
