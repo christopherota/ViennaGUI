@@ -6,7 +6,7 @@
 
 ## **GUI for ViennaRNA Package Version 2.0**
 <p align="center">
- <img src = "imagesread/viennaout.png" width =200>
+ <img src = "https://user-images.githubusercontent.com/16065443/227843384-204dbed9-5bc8-470e-b75d-cb8032aa1b32.png" width =400>
 </p>
 <br>
  
@@ -41,11 +41,13 @@ To make locally-installed ViennaRNA package user-friendly.
 **Screenshots**
 <br>
 <p align="center">
- <img src = "https://user-images.githubusercontent.com/16065443/224482754-8946ba25-3756-4910-8387-4447d5ea8492.png"width=450 height=200>
+ <img src = "https://user-images.githubusercontent.com/16065443/227843868-a49592e2-8e77-4f6c-9d25-8d4a1dd82c79.png"width=300 height=300>
  <br>
- <img src = "https://user-images.githubusercontent.com/16065443/224482901-d1dcfc56-0a3c-483c-ac22-1f386020be4a.png"width=450 height=200>
  <br>
- <img src = "https://user-images.githubusercontent.com/16065443/224578020-23323aee-de16-45f3-8c90-9bb42c5abcd2.png"width=200 height=200>
+ <img src = "https://user-images.githubusercontent.com/16065443/227843953-97310207-7b19-4a36-b968-f96ad5c6a93f.png"width=300 height=300>
+ <br>
+ <br>
+ <img src = "https://user-images.githubusercontent.com/16065443/227843834-a550a8e4-7efb-421e-bd50-544cd059a39a.png"width=300 height=300>
 <br>
 <br>
 <br>
