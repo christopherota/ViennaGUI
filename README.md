@@ -77,7 +77,7 @@ running the script and that the vienna_config_v2.py file and
 all supporting files are in the same directory.
 
 ***********************Warning***************************
-The ViennaRNA - RNAfold GUI creates a tmp folder in the
+The ViennaRNA GUI creates a tmp folder in the
 active directory. After quit or close the tmp folder will be 
 removed. If you need to save any files please do so prior
 to quitting or closing the program.
